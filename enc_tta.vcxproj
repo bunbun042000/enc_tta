@@ -150,9 +150,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="AudioCoderTTA.h" />
     <ClInclude Include="enc_tta.h" />
     <ClInclude Include="filter.h" />

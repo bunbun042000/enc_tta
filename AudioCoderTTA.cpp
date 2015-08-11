@@ -893,7 +893,8 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 	DWORD dwBytesWritten = 0;
 	DWORD dwBytesRead = 0;
 	const size_t BUFSIZE = 65536;
-	TTAuint8 chBuffer[BUFSIZE];
+	TTAuint8 *chBuffer;
+	chBuffer = new TTAuint8[BUFSIZE];
 
 	DWORD dwRetVal = GetTempPathW(MAX_PATH,          // length of the buffer
 		lpTempPathBuffer); // buffer for path 
@@ -1013,6 +1014,8 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 	DeleteFileW(filename);
 	MoveFileW(szTempFileName, filename);
 	DeleteFileW(szTempFileName);
+	delete[] chBuffer;
+	chBuffer = nullptr;
 }
 
 void AudioCoderTTA::FinishAudio(const char *filename)
