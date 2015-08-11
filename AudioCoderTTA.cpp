@@ -1,5 +1,5 @@
 /*
-The ttaplugin-winamp project.
+The ttaplugins-winamp project.
 Copyright (C) 2005-2015 Yamagata Fumihiro
 
 This library is free software; you can redistribute it and/or
@@ -496,10 +496,6 @@ void AudioCoderTTA::init_set_info(TTAuint64 pos) {
 	frame_init(0);
 } // init_set_info
 
-//void AudioCoderTTA::finalize() {
-//	write_seek_table();
-//} // finalize
-
 __forceinline void AudioCoderTTA::put_value(TTA_adapt *rice, TTAint32 value) {
 	TTAuint32 k, unary, outval;
 
@@ -979,19 +975,14 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 	{
 		if (ReadFile(hFile, chBuffer, BUFSIZE, &dwBytesRead, NULL))
 		{
-			//  Replaces lower case letters with upper case
-			//  in place (using the same buffer). The return
-			//  value is the number of replacements performed,
-			//  which we aren't interested in for this demo.
-
-			fSuccess = WriteFile(hTempFile,
-				chBuffer,
-				dwBytesRead,
-				&dwBytesWritten,
-				NULL);
+			fSuccess = WriteFile(hTempFile,	chBuffer, dwBytesRead, &dwBytesWritten,	NULL);
 			if (!fSuccess)
 			{
 				return;
+			}
+			else
+			{
+				// Do nothing
 			}
 		}
 		else
@@ -1005,11 +996,20 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 	{
 		return;
 	}
+	else
+	{
+		// Do nothing
+	}
 
 	if (!CloseHandle(hTempFile))
 	{
 		return;
 	}
+	else
+	{
+		// Do nothing
+	}
+
 	DeleteFileW(filename);
 	MoveFileW(szTempFileName, filename);
 	DeleteFileW(szTempFileName);
