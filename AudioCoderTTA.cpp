@@ -804,6 +804,7 @@ int AudioCoderTTA::Encode(int framepos, void *in0, int in_avail, int *in_used, v
 					flush_bit_cache();
 					seek_table[fnum++] = fifo.count;
 					lastblock = 2;
+					writer_done();
 				}
 				else
 				{
