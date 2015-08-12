@@ -1014,7 +1014,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 
 	DeleteFileW(filename);
 	MoveFileW(szTempFileName, filename);
-	DeleteFileW(szTempFileName);
+
 	delete[] chBuffer;
 	chBuffer = nullptr;
 }
