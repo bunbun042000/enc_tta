@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <Agave/Language/api_language.h>
 #include <Winamp/wa_ipc.h>
 #include <mmsystem.h>
+#include <Wasabi/bfc/platform/platform.h>
 
 #include <strsafe.h>
 

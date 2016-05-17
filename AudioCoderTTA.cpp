@@ -323,7 +323,8 @@ void AudioCoderTTA::writer_done() {
 	}
 } // writer_done
 
-void AudioCoderTTA::write_byte(TTAuint32 value) {
+void AudioCoderTTA::write_byte(TTAuint32 value)
+ {
 	if (fifo.pos == &fifo.end) {
 		size_t len = min(TTA_FIFO_BUFFER_SIZE, remain_data_buffer.data_length - remain_data_buffer.current_end_pos);
 		if (len <= 0)
@@ -410,8 +411,6 @@ void AudioCoderTTA::set_password(void const *pstr, TTAuint32 len) {
 void AudioCoderTTA::frame_init(TTAuint32 frame) {
 	TTAint32 shift = flt_set[depth - 1];
 	TTA_codec *enc = encoder;
-
-//	if (frame >= frames) return;
 
 	fnum = frame;
 
@@ -724,9 +723,6 @@ AudioCoderTTA::AudioCoderTTA(int nch, int srate, int bps)
 		// Do nothing
 	}
 
-//	written_header = 0;
-
-	int smp_size = (info.nch * ((info.bps + 7) / 8));
 	remain_data_buffer.data_length = PCM_BUFFER_LENGTH * smp_size + 4;
 	
 	// allocate memory for PCM buffer
@@ -915,6 +911,11 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 		throw AudioCoderTTA_exception(TTA_WRITE_ERROR);
 		return;
 	}
+	else
+	{
+		// Do nothing
+	}
+
 	UINT uRetVal = GetTempFileNameW(lpTempPathBuffer, // directory for tmp files
 		L"enc",     // temp file name prefix 
 		0,                // create unique name 
@@ -923,6 +924,10 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 	{
 		throw AudioCoderTTA_exception(TTA_WRITE_ERROR);
 		return;
+	}
+	else
+	{
+		// Do nothing
 	}
 
 	HANDLE hFile = INVALID_HANDLE_VALUE;
@@ -940,6 +945,10 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 		throw AudioCoderTTA_exception(TTA_READ_ERROR);
 		return;
 	}
+	else
+	{
+		// Do nothing
+	}
 
 	BOOL fSuccess = FALSE;
 	hTempFile = CreateFileW(szTempFileName, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -949,8 +958,8 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 	remain_data_buffer.current_pos = 0;
 	remain_data_buffer.current_end_pos = 0;
 	tta_free(remain_data_buffer.buffer);
-	remain_data_buffer.buffer = (TTAuint8 *)tta_malloc(header_and_seektable_offset);
-	remain_data_buffer.data_length = header_and_seektable_offset;
+	remain_data_buffer.buffer = (TTAuint8 *)tta_malloc((size_t)header_and_seektable_offset);
+	remain_data_buffer.data_length = (size_t)header_and_seektable_offset;
 	writer_done();
 
 	fSuccess = WriteFile(hTempFile, (remain_data_buffer.buffer + remain_data_buffer.current_pos),
@@ -1032,8 +1041,8 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 		// Do nothing
 	}
 
-	DeleteFileW(filename);
-	MoveFileW(szTempFileName, filename);
+	CopyFileW(szTempFileName, filename, FALSE);
+	DeleteFileW(szTempFileName);
 
 	delete[] chBuffer;
 	chBuffer = nullptr;
