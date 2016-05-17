@@ -18,9 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #pragma once
-#include <windows.h>
-#include <stdio.h>
-#include <commctrl.h>
 #include <nsv/enc_if.h>
 
 #include "resource.h"

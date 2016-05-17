@@ -34,6 +34,8 @@ typedef unsigned __int16(TTAuint16);
 typedef unsigned __int32(TTAuint32);
 typedef unsigned __int64(TTAuint64);
 
+static const int MAX_PATHLEN = 8192;
+
 static const int PCM_BUFFER_LENGTH = 5210;
 static const TTAuint64 MAX_SAMPLES = 4294967295;
 static const int TTA_FIFO_BUFFER_SIZE = 5120;

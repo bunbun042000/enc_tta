@@ -888,18 +888,29 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 	info.samples = samplecount;
 	TTAuint64 old_offset = header_and_seektable_offset;
 
-	wchar_t lpTempPathBuffer[MAX_PATH];
-	wchar_t szTempFileName[MAX_PATH];
+	wchar_t lpTempPathBuffer[MAX_PATHLEN];
+	wchar_t szTempFileName[MAX_PATHLEN];
 
 	DWORD dwBytesWritten = 0;
 	DWORD dwBytesRead = 0;
 	const size_t BUFSIZE = 65536;
 	TTAuint8 *chBuffer;
 	chBuffer = new TTAuint8[BUFSIZE];
+	
+	if (wcsnlen(filename, MAX_PATHLEN) > MAX_PATH)
+	{
+		throw AudioCoderTTA_exception(TTA_WRITE_ERROR);
+		return;
+	}
+	else
+	{
+		// Do nothing
+	}
 
-	DWORD dwRetVal = GetTempPathW(MAX_PATH,          // length of the buffer
+	DWORD dwRetVal = GetTempPathW(MAX_PATHLEN,          // length of the buffer
 		lpTempPathBuffer); // buffer for path 
-	if (dwRetVal > MAX_PATH || (dwRetVal == 0))
+
+	if (dwRetVal > MAX_PATHLEN || (dwRetVal == 0))
 	{
 		return;
 	}
@@ -1021,8 +1032,8 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 
 void AudioCoderTTA::FinishAudio(const char *filename)
 {
-	wchar_t *wfilename = new wchar_t[MAX_PATH + 1];
+	wchar_t *wfilename = new wchar_t[MAX_PATHLEN + 1];
 	size_t converted = 0;
-	mbstowcs_s(&converted, wfilename, MAX_PATH, filename, MAX_PATH);
+	mbstowcs_s(&converted, wfilename, MAX_PATHLEN, filename, MAX_PATHLEN);
 	FinishAudio(wfilename);
 }
