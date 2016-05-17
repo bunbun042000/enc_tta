@@ -912,6 +912,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 
 	if (dwRetVal > MAX_PATHLEN || (dwRetVal == 0))
 	{
+		throw AudioCoderTTA_exception(TTA_WRITE_ERROR);
 		return;
 	}
 	UINT uRetVal = GetTempFileNameW(lpTempPathBuffer, // directory for tmp files
@@ -920,6 +921,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 		szTempFileName);  // buffer for name 
 	if (uRetVal == 0)
 	{
+		throw AudioCoderTTA_exception(TTA_WRITE_ERROR);
 		return;
 	}
 
@@ -935,6 +937,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 		NULL);                 // no template 
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
+		throw AudioCoderTTA_exception(TTA_READ_ERROR);
 		return;
 	}
 
@@ -955,6 +958,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 
 	if (!fSuccess)
 	{
+		throw AudioCoderTTA_exception(TTA_WRITE_ERROR);
 		return;
 	}
 	else
@@ -975,6 +979,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 
 	if (!fSuccess)
 	{
+		throw AudioCoderTTA_exception(TTA_WRITE_ERROR);
 		return;
 	}
 	else
@@ -991,6 +996,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 			fSuccess = WriteFile(hTempFile,	chBuffer, dwBytesRead, &dwBytesWritten,	NULL);
 			if (!fSuccess)
 			{
+				throw AudioCoderTTA_exception(TTA_WRITE_ERROR);
 				return;
 			}
 			else
@@ -1000,6 +1006,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 		}
 		else
 		{
+			throw AudioCoderTTA_exception(TTA_READ_ERROR);
 			return;
 		}
 		//  Continues until the whole file is processed.
@@ -1007,6 +1014,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 
 	if (!CloseHandle(hFile))
 	{
+		throw AudioCoderTTA_exception(TTA_FILE_ERROR);
 		return;
 	}
 	else
@@ -1016,6 +1024,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 
 	if (!CloseHandle(hTempFile))
 	{
+		throw AudioCoderTTA_exception(TTA_FILE_ERROR);
 		return;
 	}
 	else
