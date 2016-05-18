@@ -884,7 +884,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 	info.samples = samplecount;
 	TTAuint64 old_offset = header_and_seektable_offset;
 
-	wchar_t lpTempPathBuffer[MAX_PATHLEN];
+	std::wstring lpTempPathBuffer;
 	wchar_t szTempFileName[MAX_PATHLEN];
 
 	DWORD dwBytesWritten = 0;
@@ -903,20 +903,21 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 		// Do nothing
 	}
 
-	DWORD dwRetVal = GetTempPathW(MAX_PATHLEN,          // length of the buffer
-		lpTempPathBuffer); // buffer for path 
+	std::wstring temppath = std::wstring(filename);
+	size_t lastposofpath;
+	lastposofpath = temppath.rfind(L'\\');
 
-	if (dwRetVal > MAX_PATHLEN || (dwRetVal == 0))
+	if (lastposofpath != std::string::npos)
+	{
+		lpTempPathBuffer = temppath.substr(0, lastposofpath).c_str();
+	}
+	else
 	{
 		throw AudioCoderTTA_exception(TTA_WRITE_ERROR);
 		return;
 	}
-	else
-	{
-		// Do nothing
-	}
 
-	UINT uRetVal = GetTempFileNameW(lpTempPathBuffer, // directory for tmp files
+	UINT uRetVal = GetTempFileNameW(lpTempPathBuffer.c_str(), // directory for tmp files
 		L"enc",     // temp file name prefix 
 		0,                // create unique name 
 		szTempFileName);  // buffer for name 
@@ -975,7 +976,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 		// Do nothing
 	}
 
-	dwRetVal = SetFilePointer(hTempFile, (LONG)header_offset, NULL, FILE_BEGIN);
+	DWORD dwRetVal = SetFilePointer(hTempFile, (LONG)header_offset, NULL, FILE_BEGIN);
 	remain_data_buffer.current_pos = 0;
 	remain_data_buffer.current_end_pos = 0;
 
