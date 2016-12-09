@@ -32,8 +32,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define PREDICTOR1(x, k) ((x * ((1 << k) - 1)) >> k)
 
 
-  //////////////////////// constants and definitions //////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
+//////////////////////// constants and definitions //////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 const TTAuint32 bit_mask[] = {
 	0x00000000, 0x00000001, 0x00000003, 0x00000007,
@@ -257,12 +257,12 @@ void compute_key_digits(void const *pstr, TTAuint32 len, TTAint8 *out) {
 	crc_lo ^= 0xffffffff;
 	crc_hi ^= 0xffffffff;
 
-	out[0] = ((crc_lo)& 0xff);
+	out[0] = ((crc_lo) & 0xff);
 	out[1] = ((crc_lo >> 8) & 0xff);
 	out[2] = ((crc_lo >> 16) & 0xff);
 	out[3] = ((crc_lo >> 24) & 0xff);
 
-	out[4] = ((crc_hi)& 0xff);
+	out[4] = ((crc_hi) & 0xff);
 	out[5] = ((crc_hi >> 8) & 0xff);
 	out[6] = ((crc_hi >> 16) & 0xff);
 	out[7] = ((crc_hi >> 24) & 0xff);
@@ -324,7 +324,7 @@ void AudioCoderTTA::writer_done() {
 } // writer_done
 
 void AudioCoderTTA::write_byte(TTAuint32 value)
- {
+{
 	if (fifo.pos == &fifo.end) {
 		size_t len = min(TTA_FIFO_BUFFER_SIZE, remain_data_buffer.data_length - remain_data_buffer.current_end_pos);
 		if (len <= 0)
@@ -356,7 +356,7 @@ void AudioCoderTTA::write_uint32(TTAuint32 value) {
 	write_byte(value >>= 8);
 } // write_uint32
 
- void AudioCoderTTA::write_crc32() {
+void AudioCoderTTA::write_crc32() {
 	TTAuint32 crc = fifo.crc ^ 0xffffffffUL;
 	write_uint32(crc);
 } // write_crc32
@@ -430,7 +430,7 @@ void AudioCoderTTA::frame_init(TTAuint32 frame) {
 	writer_reset();
 } // frame_init
 
-void AudioCoderTTA::frame_reset(TTAuint32 frame) 
+void AudioCoderTTA::frame_reset(TTAuint32 frame)
 {
 	writer_start();
 	frame_init(frame);
@@ -724,7 +724,7 @@ AudioCoderTTA::AudioCoderTTA(int nch, int srate, int bps)
 	}
 
 	remain_data_buffer.data_length = PCM_BUFFER_LENGTH * smp_size + 4;
-	
+
 	// allocate memory for PCM buffer
 	remain_data_buffer.buffer = (TTAuint8 *)tta_malloc(remain_data_buffer.data_length); // +4 for READ_BUFFER macro
 
@@ -737,7 +737,7 @@ AudioCoderTTA::AudioCoderTTA(int nch, int srate, int bps)
 __forceinline int AudioCoderTTA::write_output(TTAuint8 *out, int out_avail, int out_used_total)
 {
 	int out_used = 0;
-	if(remain_data_buffer.current_pos < remain_data_buffer.current_end_pos) // write any header
+	if (remain_data_buffer.current_pos < remain_data_buffer.current_end_pos) // write any header
 	{
 		int l = min(out_avail - out_used_total, (int)(remain_data_buffer.current_end_pos - remain_data_buffer.current_pos));
 		memcpy_s(out + out_used_total, out_avail, remain_data_buffer.buffer + remain_data_buffer.current_pos, l);
@@ -767,7 +767,7 @@ int AudioCoderTTA::Encode(int framepos, void *in0, int in_avail, int *in_used, v
 
 	for (;;)
 	{
-		out_used = write_output(out, out_avail,out_used_total);
+		out_used = write_output(out, out_avail, out_used_total);
 		if (out_used)
 		{
 			out_used_total += out_used;
@@ -892,7 +892,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 	const size_t BUFSIZE = 65536;
 	TTAuint8 *chBuffer;
 	chBuffer = new TTAuint8[BUFSIZE];
-	
+
 	if (wcsnlen(filename, MAX_PATHLEN) > MAX_PATH)
 	{
 		throw AudioCoderTTA_exception(TTA_WRITE_ERROR);
@@ -984,7 +984,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 	writer_done();
 
 
-	fSuccess = WriteFile(hTempFile, remain_data_buffer.buffer + remain_data_buffer.current_pos, 
+	fSuccess = WriteFile(hTempFile, remain_data_buffer.buffer + remain_data_buffer.current_pos,
 		(DWORD)(remain_data_buffer.current_end_pos - remain_data_buffer.current_pos), &dwBytesWritten, NULL);
 
 	if (!fSuccess)
@@ -1003,7 +1003,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 	{
 		if (ReadFile(hFile, chBuffer, BUFSIZE, &dwBytesRead, NULL))
 		{
-			fSuccess = WriteFile(hTempFile,	chBuffer, dwBytesRead, &dwBytesWritten,	NULL);
+			fSuccess = WriteFile(hTempFile, chBuffer, dwBytesRead, &dwBytesWritten, NULL);
 			if (!fSuccess)
 			{
 				throw AudioCoderTTA_exception(TTA_WRITE_ERROR);

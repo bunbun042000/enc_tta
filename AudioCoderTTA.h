@@ -134,7 +134,7 @@ public:
 	void process_stream();
 	void process_frame(TTAuint8 *input, TTAuint32 in_bytes);
 	TTAuint32 get_rate();
-	
+
 protected:
 	TTA_codec encoder[MAX_NCH]; // encoder (1 per channel)
 	TTAint8 data[8];	// encoder initialization data
@@ -168,7 +168,7 @@ protected:
 		size_t	current_end_pos;
 		TTAuint8   *buffer;
 	} data_buf;
-	
+
 	data_buf remain_data_buffer;
 	data_buf input_data_buffer;
 
@@ -186,12 +186,12 @@ protected:
 	TTAuint32 write_tta_header();
 	__forceinline void put_value(TTA_adapt *rice, TTAint32 value);
 	__forceinline void flush_bit_cache();
-	__forceinline int write_output(TTAuint8 *out, int out_avail,int out_used_total);
+	__forceinline int write_output(TTAuint8 *out, int out_avail, int out_used_total);
 
 }; // class AudioCoderTTA
 
 //////////////////////// TTA exception class //////////////////////////
-class AudioCoderTTA_exception : public std::exception 
+class AudioCoderTTA_exception : public std::exception
 {
 	tta_error err_code;
 

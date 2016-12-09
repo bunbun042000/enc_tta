@@ -39,7 +39,7 @@ HINSTANCE WASABI_API_LNG_HINST = 0, WASABI_API_ORIG_HINST = 0;
 
 typedef struct
 {
-//	configtype cfg;
+	//	configtype cfg;
 	char configfile[MAX_PATH];
 }
 configwndrec;
@@ -112,8 +112,8 @@ extern "C"
 	{
 		if (srct == mmioFOURCC('P', 'C', 'M', ' ') && *outt == mmioFOURCC('T', 'T', 'A', ' '))
 		{
-//			configtype cfg;
-//			readconfig(configfile, &cfg);
+			//			configtype cfg;
+			//			readconfig(configfile, &cfg);
 			*outt = mmioFOURCC('T', 'T', 'A', ' ');
 			AudioCoderTTA *t = 0;
 			t = new AudioCoderTTA(nch, srate, bps);
@@ -154,21 +154,21 @@ extern "C"
 		{
 		case WM_INITDIALOG:
 			wr = (configwndrec *)lParam;
-//			SendMessage(GetDlgItem(hwndDlg, IDC_COMPRESSIONSLIDER), TBM_SETRANGE, TRUE, MAKELONG(0, 12));
-//			SendMessage(GetDlgItem(hwndDlg, IDC_COMPRESSIONSLIDER), TBM_SETPOS, TRUE, wr->cfg.compression);
+			//			SendMessage(GetDlgItem(hwndDlg, IDC_COMPRESSIONSLIDER), TBM_SETRANGE, TRUE, MAKELONG(0, 12));
+			//			SendMessage(GetDlgItem(hwndDlg, IDC_COMPRESSIONSLIDER), TBM_SETPOS, TRUE, wr->cfg.compression);
 			break;
 
 		case WM_NOTIFY:
-//			if (wParam == IDC_COMPRESSIONSLIDER)
-//			{
-//				LPNMHDR l = (LPNMHDR)lParam;
-//				if (l->idFrom == IDC_COMPRESSIONSLIDER)
-//					wr->cfg.compression = SendMessage(GetDlgItem(hwndDlg, IDC_COMPRESSIONSLIDER), TBM_GETPOS, 0, 0);
-//			}
+			//			if (wParam == IDC_COMPRESSIONSLIDER)
+			//			{
+			//				LPNMHDR l = (LPNMHDR)lParam;
+			//				if (l->idFrom == IDC_COMPRESSIONSLIDER)
+			//					wr->cfg.compression = SendMessage(GetDlgItem(hwndDlg, IDC_COMPRESSIONSLIDER), TBM_GETPOS, 0, 0);
+			//			}
 			break;
 
 		case WM_DESTROY:
-//			writeconfig(wr->configfile, &wr->cfg);
+			//			writeconfig(wr->configfile, &wr->cfg);
 			free(wr); wr = NULL;
 			break;
 		}
@@ -180,11 +180,11 @@ extern "C"
 		if (outt == mmioFOURCC('T', 'T', 'A', ' '))
 		{
 			configwndrec *wr = (configwndrec*)malloc(sizeof(configwndrec));
-//			if (configfile) lstrcpyn(wr->configfile, configfile, MAX_PATH);
-//			else wr->configfile[0] = 0;
-//			readconfig(configfile, &wr->cfg);
+			//			if (configfile) lstrcpyn(wr->configfile, configfile, MAX_PATH);
+			//			else wr->configfile[0] = 0;
+			//			readconfig(configfile, &wr->cfg);
 			GetLocalisationApiService();
-//			return WASABI_API_CREATEDIALOGPARAM(IDD_CONFIG, hwndParent, DlgProc, (LPARAM)wr);
+			//			return WASABI_API_CREATEDIALOGPARAM(IDD_CONFIG, hwndParent, DlgProc, (LPARAM)wr);
 		}
 		return NULL;
 	}
@@ -199,10 +199,10 @@ extern "C"
 	{
 		if (outt == mmioFOURCC('T', 'T', 'A', ' '))
 		{
-//			configtype cfg;
-//			readconfig(configfile, &cfg);
-//			if (!lstrcmpi(item, "bitrate"))  lstrcpynA(data, "755", len); // FUCKO: this is ment to be an estimate for approximations of output filesize (used by ml_pmp). Improve this.
-//			else if (!lstrcmpi(item, "extension")) lstrcpynA(data, "flac", len);
+			//			configtype cfg;
+			//			readconfig(configfile, &cfg);
+			//			if (!lstrcmpi(item, "bitrate"))  lstrcpynA(data, "755", len); // FUCKO: this is ment to be an estimate for approximations of output filesize (used by ml_pmp). Improve this.
+			//			else if (!lstrcmpi(item, "extension")) lstrcpynA(data, "flac", len);
 			return 1;
 		}
 		return 0;
