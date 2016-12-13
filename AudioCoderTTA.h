@@ -187,6 +187,7 @@ protected:
 	__forceinline void put_value(TTA_adapt *rice, TTAint32 value);
 	__forceinline void flush_bit_cache();
 	__forceinline int write_output(TTAuint8 *out, int out_avail, int out_used_total);
+	void data_buf_free(data_buf *databuf);
 
 }; // class AudioCoderTTA
 

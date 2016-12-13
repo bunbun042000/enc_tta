@@ -684,6 +684,23 @@ void AudioCoderTTA::process_frame(TTAuint8 *input, TTAuint32 in_bytes) {
 
 TTAuint32 AudioCoderTTA::get_rate() { return rate; }
 
+void AudioCoderTTA::data_buf_free(data_buf *databuf)
+{
+	if (databuf->buffer != nullptr)
+	{
+		tta_free(databuf->buffer);
+		databuf->buffer = nullptr;
+	}
+	else
+	{
+		// Do nothing
+	}
+	databuf->current_pos = 0;
+	databuf->data_length = 0;
+	databuf->current_end_pos = 0;
+
+}
+
 AudioCoderTTA::AudioCoderTTA(int nch, int srate, int bps)
 {
 	seek_table = nullptr;
@@ -838,31 +855,8 @@ AudioCoderTTA::~AudioCoderTTA()
 	}
 	tta_memclear(data, 8);
 
-	if (remain_data_buffer.buffer != nullptr)
-	{
-		tta_free(remain_data_buffer.buffer);
-		remain_data_buffer.buffer = nullptr;
-		remain_data_buffer.current_pos = 0;
-		remain_data_buffer.data_length = 0;
-		remain_data_buffer.current_end_pos = 0;
-	}
-	else
-	{
-		// Do nothing
-	}
-
-	if (input_data_buffer.buffer != nullptr)
-	{
-		tta_free(input_data_buffer.buffer);
-		input_data_buffer.buffer = nullptr;
-		input_data_buffer.current_pos = 0;
-		input_data_buffer.data_length = 0;
-		input_data_buffer.current_end_pos = 0;
-	}
-	else
-	{
-		// Do nothing
-	}
+	data_buf_free(&remain_data_buffer);
+	data_buf_free(&input_data_buffer);
 
 	//	smp_size = nch * bps >> 3;
 	info.nch = 0;
@@ -956,9 +950,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 
 
 	init_set_info(0);
-	remain_data_buffer.current_pos = 0;
-	remain_data_buffer.current_end_pos = 0;
-	tta_free(remain_data_buffer.buffer);
+	data_buf_free(&remain_data_buffer);
 	remain_data_buffer.buffer = (TTAuint8 *)tta_malloc((size_t)header_and_seektable_offset);
 	remain_data_buffer.data_length = (size_t)header_and_seektable_offset;
 	writer_done();
@@ -1006,6 +998,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 			fSuccess = WriteFile(hTempFile, chBuffer, dwBytesRead, &dwBytesWritten, NULL);
 			if (!fSuccess)
 			{
+				data_buf_free(&remain_data_buffer);
 				throw AudioCoderTTA_exception(TTA_WRITE_ERROR);
 				return;
 			}
@@ -1016,6 +1009,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 		}
 		else
 		{
+			data_buf_free(&remain_data_buffer);
 			throw AudioCoderTTA_exception(TTA_READ_ERROR);
 			return;
 		}
@@ -1024,6 +1018,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 
 	if (!CloseHandle(hFile))
 	{
+		data_buf_free(&remain_data_buffer);
 		throw AudioCoderTTA_exception(TTA_FILE_ERROR);
 		return;
 	}
@@ -1034,6 +1029,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 
 	if (!CloseHandle(hTempFile))
 	{
+		data_buf_free(&remain_data_buffer);
 		throw AudioCoderTTA_exception(TTA_FILE_ERROR);
 		return;
 	}
@@ -1045,6 +1041,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 	CopyFileW(szTempFileName, filename, FALSE);
 	DeleteFileW(szTempFileName);
 
+	data_buf_free(&remain_data_buffer);
 	delete[] chBuffer;
 	chBuffer = nullptr;
 }
