@@ -37,6 +37,8 @@ api_service *WASABI_API_SVC = 0;
 api_language *WASABI_API_LNG = 0;
 HINSTANCE WASABI_API_LNG_HINST = 0, WASABI_API_ORIG_HINST = 0;
 
+const static int MAX_MESSAGE_LENGTH = 1024;
+
 typedef struct
 {
 	//	configtype cfg;
@@ -102,7 +104,7 @@ extern "C"
 		if (idx == 0)
 		{
 			GetLocalisationApiService();
-			StringCchPrintfA(desc, 1024, WASABI_API_LNGSTRING(IDS_ENC_TTA_DESC), VERSION);
+			StringCchPrintfA(desc, 1024, WASABI_API_LNGSTRING(IDS_ENC_TTA_DESC), VERSION_CHAR);
 			return mmioFOURCC('T', 'T', 'A', ' ');
 		}
 		return 0;
@@ -216,39 +218,39 @@ extern "C"
 
 static void tta_error_message(int error, const wchar_t *filename)
 {
-	wchar_t message[1024];
+	wchar_t message[MAX_MESSAGE_LENGTH];
 
 	std::wstring name(filename);
 	switch (error) {
 	case TTA_OPEN_ERROR:
-		wsprintf(message, L"Can't open file:\n%ls", name.c_str());
+		StringCbPrintf(message, MAX_MESSAGE_LENGTH, L"Can't open file:\n%ls", name.c_str());
 		break;
 	case TTA_FORMAT_ERROR:
-		wsprintf(message, L"Unknown TTA format version:\n%ls", name.c_str());
+		StringCbPrintf(message, MAX_MESSAGE_LENGTH, L"Unknown TTA format version:\n%ls", name.c_str());
 		break;
 	case TTA_NOT_SUPPORTED:
-		wsprintf(message, L"Not supported file format:\n%ls", name.c_str());
+		StringCbPrintf(message, MAX_MESSAGE_LENGTH, L"Not supported file format:\n%ls", name.c_str());
 		break;
 	case TTA_FILE_ERROR:
-		wsprintf(message, L"File is corrupted:\n%ls", name.c_str());
+		StringCbPrintf(message, MAX_MESSAGE_LENGTH, L"File is corrupted:\n%ls", name.c_str());
 		break;
 	case TTA_READ_ERROR:
-		wsprintf(message, L"Can't read from file:\n%ls", name.c_str());
+		StringCbPrintf(message, MAX_MESSAGE_LENGTH, L"Can't read from file:\n%ls", name.c_str());
 		break;
 	case TTA_WRITE_ERROR:
-		wsprintf(message, L"Can't write to file:\n%ls", name.c_str());
+		StringCbPrintf(message, MAX_MESSAGE_LENGTH, L"Can't write to file:\n%ls", name.c_str());
 		break;
 	case TTA_MEMORY_ERROR:
-		wsprintf(message, L"Insufficient memory available");
+		StringCbPrintf(message, MAX_MESSAGE_LENGTH, L"Insufficient memory available");
 		break;
 	case TTA_SEEK_ERROR:
-		wsprintf(message, L"file seek error");
+		StringCbPrintf(message, MAX_MESSAGE_LENGTH, L"file seek error");
 		break;
 	case TTA_PASSWORD_ERROR:
-		wsprintf(message, L"password protected file");
+		StringCbPrintf(message, MAX_MESSAGE_LENGTH, L"password protected file");
 		break;
 	default:
-		wsprintf(message, L"Unknown TTA decoder error");
+		StringCbPrintf(message, MAX_MESSAGE_LENGTH, L"Unknown TTA decoder error");
 		break;
 	}
 
