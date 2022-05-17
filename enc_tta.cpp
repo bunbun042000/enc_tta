@@ -47,7 +47,7 @@ typedef struct
 configwndrec;
 
 // {65c17c78-f2d6-43fa-857f-386734fa48e5}
-static const GUID EncFlakeLangGUID =
+static const GUID EncTTALangGUID =
 { 0x65c17c78, 0xf2d6, 0x43fa, { 0x85, 0x7f, 0x38, 0x67, 0x34, 0xfa, 0x48, 0xe5 } };
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
@@ -97,7 +97,7 @@ void GetLocalisationApiService(void)
 		}
 
 		// need to have this initialised before we try to do anything with localisation features
-		WASABI_API_START_LANG(GetMyInstance(), EncFlakeLangGUID);
+		WASABI_API_START_LANG(GetMyInstance(), EncTTALangGUID);
 	}
 }
 
