@@ -1,6 +1,6 @@
 /*
 The ttaplugins-winamp project.
-Copyright (C) 2005-2015 Yamagata Fumihiro
+Copyright (C) 2005-2025 Yamagata Fumihiro
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -55,17 +55,6 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 	return TRUE;
 }
 
-//void readconfig(char *configfile, configtype *cfg)
-//{
-//	cfg->compression = 8;
-//	if (configfile) GetPrivateProfileStruct("audio_flake", "conf", cfg, sizeof(configtype), configfile);
-//}
-
-//void writeconfig(char *configfile, configtype *cfg)
-//{
-//	if (configfile) WritePrivateProfileStruct("audio_flake", "conf", cfg, sizeof(configtype), configfile);
-//}
-
 static HINSTANCE GetMyInstance()
 {
 	MEMORY_BASIC_INFORMATION mbi = { 0 };
@@ -87,13 +76,32 @@ void GetLocalisationApiService(void)
 				WASABI_API_SVC = NULL;
 				return;
 			}
+			else
+			{
+				// Do nothing
+			}
+		}
+		else
+		{
+			// Do nothing
 		}
 
 		if (!WASABI_API_LNG)
 		{
 			waServiceFactory *sf;
 			sf = WASABI_API_SVC->service_getServiceByGuid(languageApiGUID);
-			if (sf) WASABI_API_LNG = reinterpret_cast<api_language*>(sf->getInterface());
+			if (sf)
+			{
+				WASABI_API_LNG = reinterpret_cast<api_language*>(sf->getInterface());
+			}
+			else
+			{
+				// Do nothing
+			}
+		}
+		else
+		{
+			// Do nothing
 		}
 
 		// need to have this initialised before we try to do anything with localisation features
@@ -110,6 +118,10 @@ extern "C"
 			GetLocalisationApiService();
 			StringCchPrintfA(desc, 1024, WASABI_API_LNGSTRING(IDS_ENC_TTA_DESC), VERSION_CHAR);
 			return mmioFOURCC('T', 'T', 'A', ' ');
+		}
+		else
+		{
+			// Do nothing
 		}
 		return 0;
 	}
@@ -128,7 +140,15 @@ extern "C"
 				delete t;
 				return NULL;
 			}
+			else
+			{
+				// Do nothing
+			}
 			return t;
+		}
+		else
+		{
+			// Do nothing
 		}
 		return NULL;
 	}
@@ -192,6 +212,10 @@ extern "C"
 			GetLocalisationApiService();
 			//			return WASABI_API_CREATEDIALOGPARAM(IDD_CONFIG, hwndParent, DlgProc, (LPARAM)wr);
 		}
+		else
+		{
+			// Do nothing
+		}
 		return NULL;
 	}
 
@@ -210,6 +234,10 @@ extern "C"
 			//			if (!lstrcmpi(item, "bitrate"))  lstrcpynA(data, "755", len); // FUCKO: this is ment to be an estimate for approximations of output filesize (used by ml_pmp). Improve this.
 			//			else if (!lstrcmpi(item, "extension")) lstrcpynA(data, "flac", len);
 			return 1;
+		}
+		else
+		{
+			// Do nothing
 		}
 		return 0;
 	}
