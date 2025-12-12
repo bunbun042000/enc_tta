@@ -18,10 +18,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #pragma once
+#include <libtta.h>
 
-// SDKDDKVer.h をインクルードすると、利用できる最も上位の Windows プラットフォームが定義されます。
+static const TTAuint64 MAX_SAMPLES = 4294967295;
 
-// 以前の Windows プラットフォーム用にアプリケーションをビルドする場合は、WinSDKVer.h をインクルードし、
-// SDKDDKVer.h をインクルードする前に、サポート対象とするプラットフォームを示すように _WIN32_WINNT マクロを設定します。
+class tta_encoder_extend : public tta::tta_encoder
+{
+public:
+	using tta::tta_encoder::tta_encoder;
+	virtual ~tta_encoder_extend()
+	{
+	};
 
-#include <SDKDDKVer.h>
+	TTAuint64 getHeaderOffset(void) const { return offset; };
+	TTAuint64 getHeaderAndSeekTableOffset(void) const { return header_and_seektable_offset; };
+	void init_set_info_for_memory(TTA_info* info, TTAuint64 pos);
+	void preliminaryFinish(void);
+	void flushFifo(void);
+
+protected:
+	TTAuint64 header_and_seektable_offset = 0;	// data start position (header and seektable size, bytes)
+};

@@ -1,6 +1,6 @@
 /*
 The ttaplugins-winamp project.
-Copyright (C) 2005-2025 Yamagata Fumihiro
+Copyright (C) 2005-2026 Yamagata Fumihiro
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -22,6 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "AudioCoderTTA.h"
 #include "enc_tta.h"
 #include "..\common\VersionNo.h"
+
+#include <libtta.h>
 
 // wasabi based services for localisation support
 #include <api/service/waServiceFactory.h>
@@ -60,7 +62,7 @@ static HINSTANCE GetMyInstance()
 	MEMORY_BASIC_INFORMATION mbi = { 0 };
 	if (VirtualQuery(GetMyInstance, &mbi, sizeof(mbi)))
 		return (HINSTANCE)mbi.AllocationBase;
-	return NULL;
+	return nullptr;
 }
 
 void GetLocalisationApiService(void)
@@ -73,7 +75,7 @@ void GetLocalisationApiService(void)
 			WASABI_API_SVC = (api_service*)SendMessage(winampwnd, WM_WA_IPC, 0, IPC_GET_API_SERVICE);
 			if (WASABI_API_SVC == (api_service*)1)
 			{
-				WASABI_API_SVC = NULL;
+				WASABI_API_SVC = nullptr;
 				return;
 			}
 			else
@@ -133,24 +135,24 @@ extern "C"
 			//			configtype cfg;
 			//			readconfig(configfile, &cfg);
 			*outt = mmioFOURCC('T', 'T', 'A', ' ');
-			AudioCoderTTA *t = 0;
-			t = new AudioCoderTTA(nch, srate, bps);
-			if (t->GetLastError())
+			AudioCoderTTA *t = nullptr;
+			try
+			{
+				t = new AudioCoderTTA(nch, srate, bps);
+			}
+			catch (const tta::tta_exception& e)
 			{
 				delete t;
-				return NULL;
+				return nullptr;
 			}
-			else
-			{
-				// Do nothing
-			}
+
 			return t;
 		}
 		else
 		{
 			// Do nothing
 		}
-		return NULL;
+		return nullptr;
 	}
 
 	void __declspec(dllexport) FinishAudio3(const char *filename, AudioCoder *coder)
@@ -195,7 +197,7 @@ extern "C"
 
 		case WM_DESTROY:
 			//			writeconfig(wr->configfile, &wr->cfg);
-			free(wr); wr = NULL;
+			free(wr); wr = nullptr;
 			break;
 		}
 		return 0;
@@ -216,7 +218,7 @@ extern "C"
 		{
 			// Do nothing
 		}
-		return NULL;
+		return nullptr;
 	}
 
 	int __declspec(dllexport) SetConfigItem(unsigned int outt, char *item, char *data, char *configfile)

@@ -30,10 +30,10 @@
     <ClInclude Include="AudioCoderTTA.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="filter.h">
+    <ClInclude Include="resource1.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="resource1.h">
+    <ClInclude Include="tta_encoder_exted.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -45,6 +45,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="AudioCoderTTA.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="tta_encoder_extend.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
