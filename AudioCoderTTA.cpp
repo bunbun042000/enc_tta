@@ -17,11 +17,13 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#include <cstdlib>
+#include <memory>
+
 #include <nsv/enc_if.h>
 
 #include <libtta.h>
 
-#include <malloc.h>
 #include "AudioCoderTTA.h"
 #include "tta_encoder_exted.h"
 
@@ -108,6 +110,15 @@ AudioCoderTTA::AudioCoderTTA(int nch, int srate, int bps) : AudioCoder()
 
 	// allocate memory for PCM buffer
 	iocb_wrapper.remain_data_buffer.buffer = (TTAuint8*)_aligned_malloc(iocb_wrapper.remain_data_buffer.data_length, 16); 
+	if (iocb_wrapper.remain_data_buffer.buffer == nullptr)
+	{
+		throw AudioCoderTTA_exception(TTA_MEMORY_ERROR);
+	}
+	else
+	{
+		memset(iocb_wrapper.remain_data_buffer.buffer, 0, iocb_wrapper.remain_data_buffer.data_length);
+	}
+
 	// encoding unit size
 	buffer_size = PCM_BUFFER_LENGTH * smp_size;
 
@@ -267,6 +278,8 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 	const size_t BUFSIZE = 65536;
 	TTAuint8 *chBuffer;
 	chBuffer = new TTAuint8[BUFSIZE];
+
+	memset(chBuffer, 0, BUFSIZE);
 
 	if (wcsnlen(filename, MAX_PATHLEN) > MAX_PATH)
 	{

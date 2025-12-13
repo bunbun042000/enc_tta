@@ -17,6 +17,9 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#include <cstdlib>
+#include <memory>
+
 #include <libtta.h>
 #include "tta_encoder_exted.h"
 
@@ -29,6 +32,8 @@ extern void writer_done(TTA_fifo* s);
 extern void writer_skip_bytes(TTA_fifo* s, TTAuint32 size);
 
 void tta_encoder_extend::init_set_info_for_memory(TTA_info* info, TTAuint64 pos) {
+	bool isAllocateSeektable = false;
+
 	// check for supported formats
 	if (info->format > 2 ||
 		info->bps < MIN_BPS ||
@@ -56,15 +61,20 @@ void tta_encoder_extend::init_set_info_for_memory(TTA_info* info, TTAuint64 pos)
 	if (nullptr == seek_table)
 	{
 		seek_table = (TTAuint64*)_aligned_malloc(frames * sizeof(TTAuint64), 16);
+		isAllocateSeektable = true;
 	}
 	else
 	{
 		// Do nothing
 	}
 
-	if (seek_table == nullptr)
+	if (nullptr == seek_table)
 	{
 		throw tta::tta_exception::tta_exception(TTA_MEMORY_ERROR);
+	}
+	else if (isAllocateSeektable)
+	{
+		memset(seek_table, 0, frames * sizeof(TTAuint64));
 	}
 	else
 	{
