@@ -37,7 +37,7 @@ void tta_encoder_extend::init_set_info_for_memory(TTA_info* info, TTAuint64 pos)
 		throw tta::tta_exception::tta_exception(TTA_FORMAT_ERROR);
 
 	// set start position if required
-	if (pos && fifo.io->seek(fifo.io, pos) < 0)
+	if (pos && fifo.io->seek(fifo.io, (TTAint64)pos) < 0)
 		throw tta::tta_exception::tta_exception(TTA_SEEK_ERROR);
 
 	writer_start(&fifo);

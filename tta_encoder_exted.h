@@ -26,9 +26,6 @@ class tta_encoder_extend : public tta::tta_encoder
 {
 public:
 	using tta::tta_encoder::tta_encoder;
-	virtual ~tta_encoder_extend()
-	{
-	};
 
 	TTAuint64 getHeaderOffset(void) const { return offset; };
 	TTAuint64 getHeaderAndSeekTableOffset(void) const { return header_and_seektable_offset; };

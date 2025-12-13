@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "AudioCoderTTA.h"
 #include "enc_tta.h"
-#include "..\common\VersionNo.h"
+#include "VersionNo.h"
 
 #include <libtta.h>
 
@@ -207,11 +207,11 @@ extern "C"
 	{
 		if (outt == mmioFOURCC('T', 'T', 'A', ' '))
 		{
-			configwndrec *wr = (configwndrec*)malloc(sizeof(configwndrec));
-			//			if (configfile) lstrcpyn(wr->configfile, configfile, MAX_PATH);
-			//			else wr->configfile[0] = 0;
+			//	configwndrec *wr = (configwndrec*)malloc(sizeof(configwndrec));
+			//	if (configfile) lstrcpyn(wr->configfile, configfile, MAX_PATH);
+			//		else wr->configfile[0] = 0;
 			//			readconfig(configfile, &wr->cfg);
-			GetLocalisationApiService();
+			//	GetLocalisationApiService();
 			//			return WASABI_API_CREATEDIALOGPARAM(IDD_CONFIG, hwndParent, DlgProc, (LPARAM)wr);
 		}
 		else
@@ -249,46 +249,3 @@ extern "C"
 		winampwnd = hwnd;
 	}
 };
-
-static void tta_error_message(int error, const wchar_t *filename)
-{
-	wchar_t message[MAX_MESSAGE_LENGTH];
-
-	std::wstring name(filename);
-	switch (error) {
-	case TTA_OPEN_ERROR:
-		StringCbPrintf(message, MAX_MESSAGE_LENGTH, L"Can't open file:\n%ls", name.c_str());
-		break;
-	case TTA_FORMAT_ERROR:
-		StringCbPrintf(message, MAX_MESSAGE_LENGTH, L"Unknown TTA format version:\n%ls", name.c_str());
-		break;
-	case TTA_NOT_SUPPORTED:
-		StringCbPrintf(message, MAX_MESSAGE_LENGTH, L"Not supported file format:\n%ls", name.c_str());
-		break;
-	case TTA_FILE_ERROR:
-		StringCbPrintf(message, MAX_MESSAGE_LENGTH, L"File is corrupted:\n%ls", name.c_str());
-		break;
-	case TTA_READ_ERROR:
-		StringCbPrintf(message, MAX_MESSAGE_LENGTH, L"Can't read from file:\n%ls", name.c_str());
-		break;
-	case TTA_WRITE_ERROR:
-		StringCbPrintf(message, MAX_MESSAGE_LENGTH, L"Can't write to file:\n%ls", name.c_str());
-		break;
-	case TTA_MEMORY_ERROR:
-		StringCbPrintf(message, MAX_MESSAGE_LENGTH, L"Insufficient memory available");
-		break;
-	case TTA_SEEK_ERROR:
-		StringCbPrintf(message, MAX_MESSAGE_LENGTH, L"file seek error");
-		break;
-	case TTA_PASSWORD_ERROR:
-		StringCbPrintf(message, MAX_MESSAGE_LENGTH, L"password protected file");
-		break;
-	default:
-		StringCbPrintf(message, MAX_MESSAGE_LENGTH, L"Unknown TTA decoder error");
-		break;
-	}
-
-	MessageBox(winampwnd, message, L"TTA Decoder Error",
-		MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
-
-}

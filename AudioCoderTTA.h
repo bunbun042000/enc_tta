@@ -42,7 +42,7 @@ struct data_buf
 struct TTA_io_callback_wrapper
 {
 	TTA_io_callback iocb{};
-	data_buf remain_data_buffer;
+	data_buf remain_data_buffer{};
 };
 
 /////////////////////// TTA encoder functions /////////////////////////

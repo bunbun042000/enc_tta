@@ -34,7 +34,7 @@ TTAint32 CALLBACK write_callback(TTA_io_callback* io, TTAuint8* buffer, TTAuint3
 		memcpy_s(iocb->remain_data_buffer.buffer + iocb->remain_data_buffer.current_end_pos,
 			iocb->remain_data_buffer.data_length - iocb->remain_data_buffer.current_end_pos, buffer, size);
 		iocb->remain_data_buffer.current_end_pos += size;
-		return size;
+		return (TTAint32)size;
 	}
 	else
 	{
@@ -47,7 +47,7 @@ TTAint64 CALLBACK seek_callback(TTA_io_callback* io, TTAint64 offset) {
 	TTA_io_callback_wrapper* iocb = (TTA_io_callback_wrapper*)io;
 	if (iocb->remain_data_buffer.current_end_pos > offset)
 	{
-		iocb->remain_data_buffer.current_pos = offset;
+		iocb->remain_data_buffer.current_pos = (size_t)offset;
 		return offset;
 	}
 	else
@@ -74,9 +74,9 @@ AudioCoderTTA::AudioCoderTTA(int nch, int srate, int bps) : AudioCoder()
 	iocb_wrapper.iocb.seek = &seek_callback;
 
 	//	smp_size = nch * bps >> 3;
-	info.nch = nch;
-	info.bps = bps;
-	info.sps = srate;
+	info.nch = (TTAuint32)nch;
+	info.bps = (TTAuint32)bps;
+	info.sps = (TTAuint32)srate;
 	info.format = TTA_FORMAT_SIMPLE;
 	info.samples = 0;
 	smp_size = nch * ((bps + 7) / 8);
@@ -104,7 +104,7 @@ AudioCoderTTA::AudioCoderTTA(int nch, int srate, int bps) : AudioCoder()
 		// Do nothing
 	}
 
-	iocb_wrapper.remain_data_buffer.data_length = PCM_BUFFER_LENGTH * smp_size + 4; // +4 for READ_BUFFER macro
+	iocb_wrapper.remain_data_buffer.data_length = (size_t)(PCM_BUFFER_LENGTH * smp_size + 4); // +4 for READ_BUFFER macro
 
 	// allocate memory for PCM buffer
 	iocb_wrapper.remain_data_buffer.buffer = (TTAuint8*)_aligned_malloc(iocb_wrapper.remain_data_buffer.data_length, 16); 
@@ -156,7 +156,7 @@ __forceinline int AudioCoderTTA::write_output(TTAuint8 *out, int out_avail, int 
 	if (iocb_wrapper.remain_data_buffer.current_pos < iocb_wrapper.remain_data_buffer.current_end_pos) // write any header
 	{
 		int l = min(out_avail - out_used_total, (int)(iocb_wrapper.remain_data_buffer.current_end_pos - iocb_wrapper.remain_data_buffer.current_pos));
-		memcpy_s(out + out_used_total, out_avail - out_used_total, iocb_wrapper.remain_data_buffer.buffer + iocb_wrapper.remain_data_buffer.current_pos, l);
+		memcpy_s(out + out_used_total, (rsize_t)(out_avail - out_used_total), iocb_wrapper.remain_data_buffer.buffer + iocb_wrapper.remain_data_buffer.current_pos, (rsize_t)l);
 		out_used += l;
 		iocb_wrapper.remain_data_buffer.current_pos += l;
 
@@ -176,7 +176,6 @@ __forceinline int AudioCoderTTA::write_output(TTAuint8 *out, int out_avail, int 
 
 int AudioCoderTTA::Encode(int framepos, void *in0, int in_avail, int *in_used, void *out0, int out_avail)
 {
-	int ret = -1;
 	int out_used_total = 0;
 	int out_used = 0;
 	*in_used = 0;
@@ -204,7 +203,7 @@ int AudioCoderTTA::Encode(int framepos, void *in0, int in_avail, int *in_used, v
 			if (l > 0 || (lastblock == 1 && in_avail == *in_used))
 			{
 				samplecount += l / smp_size;
-				TTA->process_stream(in + *in_used, l);
+				TTA->process_stream(in + *in_used, (TTAuint32)l);
 				*in_used += l;
 
 				if (lastblock)
