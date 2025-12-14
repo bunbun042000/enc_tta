@@ -70,7 +70,7 @@ protected:
 	int smp_size = 0;
 
 private:
-	alignas(16) TTA_io_callback_wrapper iocb_wrapper;
+	alignas(16) TTA_io_callback_wrapper iocb_wrapper ={};
 	alignas(tta_encoder_extend) std::byte ttaenc_mem[sizeof(tta_encoder_extend)] = {};
 	tta_encoder_extend* TTA = nullptr;
 
