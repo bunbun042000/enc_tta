@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <libtta.h>
 
 #include "AudioCoderTTA.h"
-#include "tta_encoder_exted.h"
+#include <tta_encoder_extend.h>
 
 TTAint32 CALLBACK write_callback(TTA_io_callback* io, TTAuint8* buffer, TTAuint32 size)
 {
@@ -124,14 +124,14 @@ AudioCoderTTA::AudioCoderTTA(int nch, int srate, int bps) : AudioCoder()
 
 	try
 	{
-		TTA = new (&ttaenc_mem) tta_encoder_extend((TTA_io_callback*)&iocb_wrapper);
+		TTA = new (&ttaenc_mem) tta::tta_encoder_extend((TTA_io_callback*)&iocb_wrapper);
 	}
 
 	catch (tta::tta_exception& ex)
 	{
 		if (nullptr != TTA)
 		{
-			reinterpret_cast<tta_encoder_extend*>(TTA)->~tta_encoder_extend();
+			reinterpret_cast<tta::tta_encoder_extend*>(TTA)->~tta_encoder_extend();
 			TTA = nullptr;
 			data_buf_free(&iocb_wrapper.remain_data_buffer);
 			throw AudioCoderTTA_exception(TTA_MEMORY_ERROR);
@@ -251,7 +251,7 @@ AudioCoderTTA::~AudioCoderTTA()
 
 	if (nullptr != TTA)
 	{
-		reinterpret_cast<tta_encoder_extend*>(TTA)->~tta_encoder_extend();
+		reinterpret_cast<tta::tta_encoder_extend*>(TTA)->~tta_encoder_extend();
 		TTA = nullptr;
 	}
 	else

@@ -167,13 +167,11 @@
     <ClInclude Include="resource1.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="tta_encoder_exted.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AudioCoderTTA.cpp" />
     <ClCompile Include="enc_tta.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="tta_encoder_extend.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="out_tta.rc" />

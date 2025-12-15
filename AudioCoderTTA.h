@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <stdlib.h>
 #include <libtta.h>
 
-#include "tta_encoder_exted.h"
+#include <tta_encoder_extend.h>
 
 static const int MAX_PATHLEN = 8192;
 static const int PCM_BUFFER_LENGTH = 5210;
@@ -71,8 +71,8 @@ protected:
 
 private:
 	alignas(16) TTA_io_callback_wrapper iocb_wrapper ={};
-	alignas(tta_encoder_extend) std::byte ttaenc_mem[sizeof(tta_encoder_extend)] = {};
-	tta_encoder_extend* TTA = nullptr;
+	alignas(tta::tta_encoder_extend) std::byte ttaenc_mem[sizeof(tta::tta_encoder_extend)] = {};
+	tta::tta_encoder_extend* TTA = nullptr;
 
 	int buffer_size = 0;
 
