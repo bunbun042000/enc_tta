@@ -118,7 +118,7 @@ extern "C"
 		if (idx == 0)
 		{
 			GetLocalisationApiService();
-			StringCchPrintfA(desc, 1024, WASABI_API_LNGSTRING(IDS_ENC_TTA_DESC), VERSION_CHAR);
+			StringCchPrintfA(desc, 1024, WASABI_API_LNGSTRING(IDS_ENC_TTA_DESC), ENC_TTA_VERSION_CHAR);
 			return mmioFOURCC('T', 'T', 'A', ' ');
 		}
 		else
