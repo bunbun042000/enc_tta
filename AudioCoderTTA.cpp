@@ -67,29 +67,29 @@ AudioCoderTTA::AudioCoderTTA() : AudioCoder()
 AudioCoderTTA::AudioCoderTTA(int nch, int srate, int bps) : AudioCoder()
 {
 
-	iocb_wrapper.remain_data_buffer.buffer = nullptr;
-	iocb_wrapper.remain_data_buffer.data_length = 0;
-	iocb_wrapper.remain_data_buffer.current_pos = 0;
-	iocb_wrapper.remain_data_buffer.current_end_pos = 0;
+	m_iocb_wrapper.remain_data_buffer.buffer = nullptr;
+	m_iocb_wrapper.remain_data_buffer.data_length = 0;
+	m_iocb_wrapper.remain_data_buffer.current_pos = 0;
+	m_iocb_wrapper.remain_data_buffer.current_end_pos = 0;
 
-	iocb_wrapper.iocb.read = nullptr;
-	iocb_wrapper.iocb.write = &write_callback;
-	iocb_wrapper.iocb.seek = &seek_callback;
+	m_iocb_wrapper.iocb.read = nullptr;
+	m_iocb_wrapper.iocb.write = &write_callback;
+	m_iocb_wrapper.iocb.seek = &seek_callback;
 
-	//	smp_size = nch * bps >> 3;
-	info.nch = (TTAuint32)nch;
-	info.bps = (TTAuint32)bps;
-	info.sps = (TTAuint32)srate;
-	info.format = TTA_FORMAT_SIMPLE;
-	info.samples = 0;
-	smp_size = nch * ((bps + 7) / 8);
-	samplecount = 0;
+	//	m_smp_size = nch * bps >> 3;
+	m_info.nch = (TTAuint32)nch;
+	m_info.bps = (TTAuint32)bps;
+	m_info.sps = (TTAuint32)srate;
+	m_info.format = TTA_FORMAT_SIMPLE;
+	m_info.samples = 0;
+	m_smp_size = nch * ((bps + 7) / 8);
+	m_samplecount = 0;
 
 	// check for supported formats
-	if ((info.nch == 0) ||
-		(info.nch > MAX_NCH) ||
-		(info.bps == 0) ||
-		(info.bps > MAX_BPS))
+	if ((m_info.nch == 0) ||
+		(m_info.nch > MAX_NCH) ||
+		(m_info.bps == 0) ||
+		(m_info.bps > MAX_BPS))
 	{
 		throw AudioCoderTTA_exception(TTA_FORMAT_ERROR);
 	}
@@ -98,43 +98,43 @@ AudioCoderTTA::AudioCoderTTA(int nch, int srate, int bps) : AudioCoder()
 		// Do nothing
 	}
 
-	if (info.samples == 0)
+	if (m_info.samples == 0)
 	{
-		info.samples = MAX_SAMPLES;
+		m_info.samples = MAX_SAMPLES;
 	}
 	else
 	{
 		// Do nothing
 	}
 
-	iocb_wrapper.remain_data_buffer.data_length = (size_t)(PCM_BUFFER_LENGTH * smp_size + 4); // +4 for READ_BUFFER macro
+	m_iocb_wrapper.remain_data_buffer.data_length = (size_t)(PCM_BUFFER_LENGTH * m_smp_size + 4); // +4 for READ_BUFFER macro
 
 	// allocate memory for PCM buffer
-	iocb_wrapper.remain_data_buffer.buffer = (TTAuint8*)_aligned_malloc(iocb_wrapper.remain_data_buffer.data_length, 16); 
-	if (iocb_wrapper.remain_data_buffer.buffer == nullptr)
+	m_iocb_wrapper.remain_data_buffer.buffer = (TTAuint8*)_aligned_malloc(m_iocb_wrapper.remain_data_buffer.data_length, 16); 
+	if (m_iocb_wrapper.remain_data_buffer.buffer == nullptr)
 	{
 		throw AudioCoderTTA_exception(TTA_MEMORY_ERROR);
 	}
 	else
 	{
-		memset(iocb_wrapper.remain_data_buffer.buffer, 0, iocb_wrapper.remain_data_buffer.data_length);
+		memset(m_iocb_wrapper.remain_data_buffer.buffer, 0, m_iocb_wrapper.remain_data_buffer.data_length);
 	}
 
 	// encoding unit size
-	buffer_size = PCM_BUFFER_LENGTH * smp_size;
+	m_buffer_size = PCM_BUFFER_LENGTH * m_smp_size;
 
 	try
 	{
-		TTA = new (&ttaenc_mem) tta::tta_encoder_extend((TTA_io_callback*)&iocb_wrapper);
+		m_TTA = new (&m_ttaenc_mem) tta::tta_encoder_extend((TTA_io_callback*)&m_iocb_wrapper);
 	}
 
 	catch (tta::tta_exception& ex)
 	{
-		if (nullptr != TTA)
+		if (nullptr != m_TTA)
 		{
-			reinterpret_cast<tta::tta_encoder_extend*>(TTA)->~tta_encoder_extend();
-			TTA = nullptr;
-			data_buf_free(&iocb_wrapper.remain_data_buffer);
+			reinterpret_cast<tta::tta_encoder_extend*>(m_TTA)->~tta_encoder_extend();
+			m_TTA = nullptr;
+			data_buf_free(&m_iocb_wrapper.remain_data_buffer);
 			throw AudioCoderTTA_exception(TTA_MEMORY_ERROR);
 		}
 		else
@@ -142,7 +142,7 @@ AudioCoderTTA::AudioCoderTTA(int nch, int srate, int bps) : AudioCoder()
 			// Do nothing
 		}
 	}
-	TTA->init_set_info_for_memory(&info, 0);
+	m_TTA->init_set_info_for_memory(&m_info, 0);
 }
 
 void AudioCoderTTA::data_buf_free(data_buf *databuf)
@@ -165,18 +165,18 @@ void AudioCoderTTA::data_buf_free(data_buf *databuf)
 __forceinline int AudioCoderTTA::write_output(TTAuint8 *out, int out_avail, int out_used_total)
 {
 	int out_used = 0;
-	if (iocb_wrapper.remain_data_buffer.current_pos < iocb_wrapper.remain_data_buffer.current_end_pos) // write any header
+	if (m_iocb_wrapper.remain_data_buffer.current_pos < m_iocb_wrapper.remain_data_buffer.current_end_pos) // write any header
 	{
-		int l = min(out_avail - out_used_total, (int)(iocb_wrapper.remain_data_buffer.current_end_pos - iocb_wrapper.remain_data_buffer.current_pos));
-		memcpy_s(out + out_used_total, (rsize_t)(out_avail - out_used_total), iocb_wrapper.remain_data_buffer.buffer + iocb_wrapper.remain_data_buffer.current_pos, (rsize_t)l);
+		int l = min(out_avail - out_used_total, (int)(m_iocb_wrapper.remain_data_buffer.current_end_pos - m_iocb_wrapper.remain_data_buffer.current_pos));
+		memcpy_s(out + out_used_total, (rsize_t)(out_avail - out_used_total), m_iocb_wrapper.remain_data_buffer.buffer + m_iocb_wrapper.remain_data_buffer.current_pos, (rsize_t)l);
 		out_used += l;
-		iocb_wrapper.remain_data_buffer.current_pos += l;
+		m_iocb_wrapper.remain_data_buffer.current_pos += l;
 
 	}
-	else if (iocb_wrapper.remain_data_buffer.current_pos == iocb_wrapper.remain_data_buffer.current_end_pos)
+	else if (m_iocb_wrapper.remain_data_buffer.current_pos == m_iocb_wrapper.remain_data_buffer.current_end_pos)
 	{
-		iocb_wrapper.remain_data_buffer.current_pos = 0;
-		iocb_wrapper.remain_data_buffer.current_end_pos = 0;
+		m_iocb_wrapper.remain_data_buffer.current_pos = 0;
+		m_iocb_wrapper.remain_data_buffer.current_end_pos = 0;
 	}
 	else
 	{
@@ -211,17 +211,17 @@ int AudioCoderTTA::Encode(int framepos, void *in0, int in_avail, int *in_used, v
 		}
 		else // encode more
 		{
-			int l = min((int)(buffer_size), in_avail - *in_used);
-			if (l > 0 || (lastblock == 1 && in_avail == *in_used))
+			int l = min((int)(m_buffer_size), in_avail - *in_used);
+			if (l > 0 || (m_lastblock == 1 && in_avail == *in_used))
 			{
-				samplecount += l / smp_size;
-				TTA->process_stream(in + *in_used, (TTAuint32)l);
+				m_samplecount += l / m_smp_size;
+				m_TTA->process_stream(in + *in_used, (TTAuint32)l);
 				*in_used += l;
 
-				if (lastblock)
+				if (m_lastblock)
 				{
-					TTA->preliminaryFinish();
-					lastblock = 2;
+					m_TTA->preliminaryFinish();
+					m_lastblock = 2;
 				}
 				else
 				{
@@ -240,20 +240,20 @@ int AudioCoderTTA::Encode(int framepos, void *in0, int in_avail, int *in_used, v
 AudioCoderTTA::~AudioCoderTTA()
 {
 
-	data_buf_free(&iocb_wrapper.remain_data_buffer);
+	data_buf_free(&m_iocb_wrapper.remain_data_buffer);
 
-	//	smp_size = nch * bps >> 3;
-	info.nch = 0;
-	info.bps = 0;
-	info.sps = 0;
-	info.format = TTA_FORMAT_SIMPLE;
-	info.samples = 0;
-	samplecount = 0;
+	//	m_smp_size = nch * bps >> 3;
+	m_info.nch = 0;
+	m_info.bps = 0;
+	m_info.sps = 0;
+	m_info.format = TTA_FORMAT_SIMPLE;
+	m_info.samples = 0;
+	m_samplecount = 0;
 
-	if (nullptr != TTA)
+	if (nullptr != m_TTA)
 	{
-		reinterpret_cast<tta::tta_encoder_extend*>(TTA)->~tta_encoder_extend();
-		TTA = nullptr;
+		reinterpret_cast<tta::tta_encoder_extend*>(m_TTA)->~tta_encoder_extend();
+		m_TTA = nullptr;
 	}
 	else
 	{
@@ -264,12 +264,12 @@ AudioCoderTTA::~AudioCoderTTA()
 
 void AudioCoderTTA::PrepareToFinish()
 {
-	lastblock = 1;
+	m_lastblock = 1;
 }
 
 void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 {
-	info.samples = samplecount;
+	m_info.samples = m_samplecount;
 
 	std::wstring lpTempPathBuffer;
 	wchar_t szTempFileName[MAX_PATHLEN];
@@ -347,11 +347,11 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 	// Write header
 	hTempFile = CreateFileW(szTempFileName, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 
-	TTA->init_set_info_for_memory(&info, 0);
-	TTA->flushFifo();
+	m_TTA->init_set_info_for_memory(&m_info, 0);
+	m_TTA->flushFifo();
 
-	fSuccess = WriteFile(hTempFile, (iocb_wrapper.remain_data_buffer.buffer + iocb_wrapper.remain_data_buffer.current_pos),
-		(DWORD)(TTA->getHeaderOffset()), &dwBytesWritten, nullptr);
+	fSuccess = WriteFile(hTempFile, (m_iocb_wrapper.remain_data_buffer.buffer + m_iocb_wrapper.remain_data_buffer.current_pos),
+		(DWORD)(m_TTA->getHeaderOffset()), &dwBytesWritten, nullptr);
 
 	if (!fSuccess)
 	{
@@ -364,14 +364,14 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 	}
 
 	// Write seek table
-	DWORD dwRetVal = SetFilePointer(hTempFile, (LONG)TTA->getHeaderOffset(), nullptr, FILE_BEGIN);
-	iocb_wrapper.remain_data_buffer.current_pos = 0;
-	iocb_wrapper.remain_data_buffer.current_end_pos = 0;
+	DWORD dwRetVal = SetFilePointer(hTempFile, (LONG)m_TTA->getHeaderOffset(), nullptr, FILE_BEGIN);
+	m_iocb_wrapper.remain_data_buffer.current_pos = 0;
+	m_iocb_wrapper.remain_data_buffer.current_end_pos = 0;
 
-	TTA->finalize();
+	m_TTA->finalize();
 
-	fSuccess = WriteFile(hTempFile, iocb_wrapper.remain_data_buffer.buffer + iocb_wrapper.remain_data_buffer.current_pos,
-		(DWORD)(iocb_wrapper.remain_data_buffer.current_end_pos - iocb_wrapper.remain_data_buffer.current_pos), &dwBytesWritten, nullptr);
+	fSuccess = WriteFile(hTempFile, m_iocb_wrapper.remain_data_buffer.buffer + m_iocb_wrapper.remain_data_buffer.current_pos,
+		(DWORD)(m_iocb_wrapper.remain_data_buffer.current_end_pos - m_iocb_wrapper.remain_data_buffer.current_pos), &dwBytesWritten, nullptr);
 
 	if (!fSuccess)
 	{
@@ -383,7 +383,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 		// Do nothing
 	}
 
-	dwRetVal = SetFilePointer(hFile, (LONG)TTA->getHeaderOffset(), nullptr, FILE_BEGIN);
+	dwRetVal = SetFilePointer(hFile, (LONG)m_TTA->getHeaderOffset(), nullptr, FILE_BEGIN);
 
 	do
 	{
@@ -392,7 +392,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 			fSuccess = WriteFile(hTempFile, chBuffer, dwBytesRead, &dwBytesWritten, nullptr);
 			if (!fSuccess)
 			{
-				data_buf_free(&iocb_wrapper.remain_data_buffer);
+				data_buf_free(&m_iocb_wrapper.remain_data_buffer);
 				throw AudioCoderTTA_exception(TTA_WRITE_ERROR);
 				return;
 			}
@@ -403,7 +403,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 		}
 		else
 		{
-			data_buf_free(&iocb_wrapper.remain_data_buffer);
+			data_buf_free(&m_iocb_wrapper.remain_data_buffer);
 			throw AudioCoderTTA_exception(TTA_READ_ERROR);
 			return;
 		}
@@ -412,7 +412,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 
 	if (!CloseHandle(hFile))
 	{
-		data_buf_free(&iocb_wrapper.remain_data_buffer);
+		data_buf_free(&m_iocb_wrapper.remain_data_buffer);
 		throw AudioCoderTTA_exception(TTA_FILE_ERROR);
 		return;
 	}
@@ -423,7 +423,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 
 	if (!CloseHandle(hTempFile))
 	{
-		data_buf_free(&iocb_wrapper.remain_data_buffer);
+		data_buf_free(&m_iocb_wrapper.remain_data_buffer);
 		throw AudioCoderTTA_exception(TTA_FILE_ERROR);
 		return;
 	}
@@ -435,7 +435,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 	CopyFileW(szTempFileName, filename, FALSE);
 	DeleteFileW(szTempFileName);
 
-	data_buf_free(&iocb_wrapper.remain_data_buffer);
+	data_buf_free(&m_iocb_wrapper.remain_data_buffer);
 	delete[] chBuffer;
 	chBuffer = nullptr;
 }

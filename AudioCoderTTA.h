@@ -67,29 +67,29 @@ protected:
 	__forceinline int write_output(TTAuint8* out, int out_avail, int out_used_total);
 	void data_buf_free(data_buf* databuf);
 
-	TTA_info info = {};
+	TTA_info m_info = {};
 
-	int lastblock = 0;
-	TTAuint32 samplecount = 0;
-	int smp_size = 0;
+	int m_lastblock = 0;
+	TTAuint32 m_samplecount = 0;
+	int m_smp_size = 0;
 
 private:
-	alignas(16) TTA_io_callback_wrapper iocb_wrapper ={};
-	alignas(tta::tta_encoder_extend) std::byte ttaenc_mem[sizeof(tta::tta_encoder_extend)] = {};
-	tta::tta_encoder_extend* TTA = nullptr;
+	alignas(16) TTA_io_callback_wrapper m_iocb_wrapper ={};
+	alignas(tta::tta_encoder_extend) std::byte m_ttaenc_mem[sizeof(tta::tta_encoder_extend)] = {};
+	tta::tta_encoder_extend *m_TTA = nullptr;
 
-	int buffer_size = 0;
+	int m_buffer_size = 0;
 
 }; // class AudioCoderTTA
 
 //////////////////////// TTA exception class //////////////////////////
 class AudioCoderTTA_exception : public std::exception
 {
-	tta_error err_code;
+	tta_error m_err_code;
 
 public:
-	AudioCoderTTA_exception(tta_error code) : err_code(code) {}
-	tta_error code() const { return err_code; }
+	AudioCoderTTA_exception(tta_error code) : m_err_code(code) {}
+	tta_error code() const { return m_err_code; }
 }; // class AudioCoderTTA_exception
 
 #endif // #ifndef AUDIOCODERTTA_H_INCLUDED
