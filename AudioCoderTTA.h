@@ -56,7 +56,7 @@ public:
 	AudioCoderTTA();
 	AudioCoderTTA(int nch, int srate, int bps);
 	int Encode(int framepos, void *in0, int in_avail, int *in_used, void *out0, int out_avail) override; //returns bytes in out
-	~AudioCoderTTA();
+	virtual ~AudioCoderTTA();
 
 	/* internal public functions */
 	void PrepareToFinish();

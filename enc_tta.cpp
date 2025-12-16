@@ -62,7 +62,7 @@ static HINSTANCE GetMyInstance()
 {
 	MEMORY_BASIC_INFORMATION mbi = { 0 };
 	if (VirtualQuery(GetMyInstance, &mbi, sizeof(mbi)))
-		return (HINSTANCE)mbi.AllocationBase;
+		return static_cast<HINSTANCE>(mbi.AllocationBase);
 	return nullptr;
 }
 
@@ -73,8 +73,8 @@ void GetLocalisationApiService(void)
 		// loader so that we can get the localisation service api for use
 		if (!WASABI_API_SVC)
 		{
-			WASABI_API_SVC = (api_service*)SendMessage(winampwnd, WM_WA_IPC, 0, IPC_GET_API_SERVICE);
-			if (WASABI_API_SVC == (api_service*)1)
+			WASABI_API_SVC = reinterpret_cast<api_service*>(SendMessage(winampwnd, WM_WA_IPC, 0, IPC_GET_API_SERVICE));
+			if (WASABI_API_SVC == reinterpret_cast<api_service*>(1))
 			{
 				WASABI_API_SVC = nullptr;
 				return;
