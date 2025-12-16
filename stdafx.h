@@ -23,8 +23,8 @@ If not, see <https://www.gnu.org/licenses/>.
 // を記述します。
 //
 
-#pragma once
-
+#ifndef STDAFX_H_INCLUDED
+#define STDAFX_H_INCLUDED
 #include "targetver.h"
 
 #define WIN32_LEAN_AND_MEAN             // Windows ヘッダーから使用されていない部分を除外します。
@@ -34,3 +34,5 @@ If not, see <https://www.gnu.org/licenses/>.
 
 
 // TODO: プログラムに必要な追加ヘッダーをここで参照してください
+
+#endif // #ifndef STDAFX_H_INCLUDED

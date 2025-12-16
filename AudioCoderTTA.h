@@ -18,7 +18,10 @@ You should have received a copy of the GNU General Public License along with enc
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef AUDIOCODERTTA_H_INCLUDED
+#define AUDIOCODERTTA_H_INCLUDED
+
+
 #include <nsv/enc_if.h>
 #include <memory.h>
 #include <malloc.h>
@@ -89,4 +92,5 @@ public:
 	tta_error code() const { return err_code; }
 }; // class AudioCoderTTA_exception
 
+#endif // #ifndef AUDIOCODERTTA_H_INCLUDED
 

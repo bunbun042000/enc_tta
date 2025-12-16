@@ -18,7 +18,11 @@ You should have received a copy of the GNU General Public License along with enc
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef ENC_TTA_H_INCLUDED
+#define ENC_TTA_H_INCLUDED
+
 #include <nsv/enc_if.h>
 
 #include "resource.h"
+
+#endif // #ifndef ENC_TTA_H_INCLUDED
