@@ -170,7 +170,7 @@ __forceinline int AudioCoderTTA::write_output(TTAuint8 *out, int out_avail, int 
 	if (m_iocb_wrapper.remain_data_buffer.current_pos < m_iocb_wrapper.remain_data_buffer.current_end_pos) // write any header
 	{
 		int l = min(out_avail - out_used_total, static_cast<int>(m_iocb_wrapper.remain_data_buffer.current_end_pos - m_iocb_wrapper.remain_data_buffer.current_pos));
-		memcpy_s(out + out_used_total, static_cast<rsize_t>(out_avail - out_used_total), m_iocb_wrapper.remain_data_buffer.buffer + m_iocb_wrapper.remain_data_buffer.current_pos, (rsize_t)l);
+		memcpy_s(out + out_used_total, static_cast<rsize_t>(out_avail - out_used_total), m_iocb_wrapper.remain_data_buffer.buffer + m_iocb_wrapper.remain_data_buffer.current_pos, static_cast<rsize_t>(l));
 		out_used += l;
 		m_iocb_wrapper.remain_data_buffer.current_pos += l;
 
