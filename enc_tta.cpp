@@ -66,7 +66,7 @@ static HINSTANCE GetMyInstance()
 	return nullptr;
 }
 
-void GetLocalisationApiService(void)
+void GetLocalisationApiService()
 {
 	if (!WASABI_API_LNG)
 	{
