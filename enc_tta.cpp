@@ -36,8 +36,8 @@ If not, see <https://www.gnu.org/licenses/>.
 #include <strsafe.h>
 
 HWND winampwnd = 0;
-api_service *WASABI_API_SVC = 0;
-api_language *WASABI_API_LNG = 0;
+api_service *WASABI_API_SVC = nullptr;
+api_language *WASABI_API_LNG = nullptr;
 HINSTANCE WASABI_API_LNG_HINST = 0, WASABI_API_ORIG_HINST = 0;
 
 const static int MAX_MESSAGE_LENGTH = 1024;
