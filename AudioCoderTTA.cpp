@@ -274,7 +274,7 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 	m_info.samples = m_samplecount;
 
 	std::wstring lpTempPathBuffer;
-	wchar_t szTempFileName[MAX_PATHLEN];
+	wchar_t *szTempFileName = new wchar_t[MAX_PATHLEN];
 
 	DWORD dwBytesWritten = 0;
 	DWORD dwBytesRead = 0;
