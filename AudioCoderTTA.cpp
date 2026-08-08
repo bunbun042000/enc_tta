@@ -438,6 +438,8 @@ void AudioCoderTTA::FinishAudio(const wchar_t *filename)
 	DeleteFileW(szTempFileName);
 
 	data_buf_free(&m_iocb_wrapper.remain_data_buffer);
+	delete[] szTempFileName;
+	szTempFileName = nullptr;
 	delete[] chBuffer;
 	chBuffer = nullptr;
 }
@@ -448,4 +450,7 @@ void AudioCoderTTA::FinishAudio(const char *filename)
 	size_t converted = 0;
 	mbstowcs_s(&converted, wfilename, MAX_PATHLEN, filename, MAX_PATHLEN);
 	FinishAudio(wfilename);
+
+	delete[] wfilename;
+	wfilename = nullptr;
 }
